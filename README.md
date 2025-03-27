@@ -81,9 +81,9 @@ After developing this project, we can schedule the Airflow DAG to run based on o
 [![Auto _Animation](https://github.com/user-attachments/assets/77c2131f-3fd6-4738-8043-6ccbb2e5775b)
 ](https://public.tableau.com/app/profile/ravi.shankar.p.r/viz/Auto_Insurance_claims_data_dashboard/final_dashboard)
 
-> ### Checkout Tableau data visualization at [Insurance claims data| Tableau Public](https://public.tableau.com/app/profile/ravi.shankar.p.r/viz/Auto_Insurance_claims_data_dashboard/final_dashboard)
+> ### Checkout Tableau data visualization at [Insurance claims data| Tableau Public](https://public.tableau.com/app/profile/shreyas.anil.hingmire/viz/RealTimeInsuaranceClaims/final_dashboard)
 
-> ### Checkout [how_to_run.docx](https://github.com/ravishankar324/Real-Time-Insurance-claims-Data-ETL-Pipeline/blob/master/how_to_run.docx) file for detailed steps to run this project.
+> ### Checkout [how_to_run.docx](https://github.com/shreyasah99/Real-Time-Insurance-Claims-Data-ETL-Pipeline/blob/main/how_to_run.docx) file for detailed steps to run this project.
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request with any improvements.
