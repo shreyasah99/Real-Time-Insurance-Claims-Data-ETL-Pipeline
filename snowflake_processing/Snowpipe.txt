@@ -1,0 +1,62 @@
+ //creating schema for snowpipe
+CREATE OR REPLACE SCHEMA INSURANCE_DB.PIPES;
+
+/// CREATING PIPES FOR NORMALIZED DATA IN S3 ///
+// Define pipe for policy data
+CREATE OR REPLACE pipe INSURANCE_DB.PIPES.policy_pipe
+auto_ingest = TRUE
+AS
+COPY INTO INSURANCE_DB.PUBLIC.staging_policy
+FROM @INSURANCE_DB.INSURANCE_STAGES.csv_stage;
+
+//define pipe for vehicles data
+CREATE OR REPLACE pipe INSURANCE_DB.PIPES.vehicles_pipe
+auto_ingest = TRUE
+AS
+COPY INTO INSURANCE_DB.PUBLIC.staging_vehicles
+FROM @INSURANCE_DB.INSURANCE_STAGES.vehicles_data_stage;
+
+//define pipe for customers data
+CREATE OR REPLACE pipe INSURANCE_DB.PIPES.customers_pipe
+auto_ingest = TRUE
+AS
+COPY INTO INSURANCE_DB.PUBLIC.staging_customers
+FROM @INSURANCE_DB.INSURANCE_STAGES.customers_data_stage;
+
+//define pipe for claims data
+CREATE OR REPLACE pipe INSURANCE_DB.PIPES.claims_pipe
+auto_ingest = TRUE
+AS
+COPY INTO INSURANCE_DB.PUBLIC.staging_claims
+FROM @INSURANCE_DB.INSURANCE_STAGES.claims_data_stage;
+
+// Describe snowpipe
+DESC pipe policy_pipe;
+DESC pipe vehicles_pipe;
+DESC pipe customers_pipe;
+DESC pipe claims_pipe;
+
+// refreshing snowpipe
+ALTER pipe policy_pipe refresh;
+ALTER pipe vehicles_pipe refresh;
+ALTER pipe customers_pipe refresh;
+ALTER pipe claims_pipe refresh;
+
+// status of snowpipes
+SELECT SYSTEM$PIPE_STATUS('policy_pipe');
+SELECT SYSTEM$PIPE_STATUS('vehicles_pipe');
+SELECT SYSTEM$PIPE_STATUS('customers_pipe');
+SELECT SYSTEM$PIPE_STATUS('claims_pipe');
+
+// to check pipe load
+SELECT * FROM TABLE(VALIDATE_PIPE_LOAD(
+    PIPE_NAME => 'INSURANCE_DB.PIPES.policy_pipe',
+    START_TIME => DATEADD(HOUR,-1,CURRENT_TIMESTAMP())));
+
+// to check copy history of tables
+SELECT * FROM TABLE (INFORMATION_SCHEMA.COPY_HISTORY(
+   table_name  =>  'INSURANCE_DB.PUBLIC.vehicles',
+   START_TIME =>DATEADD(HOUR,-2,CURRENT_TIMESTAMP())));
+
+
+

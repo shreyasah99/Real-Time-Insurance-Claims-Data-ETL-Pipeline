@@ -1,0 +1,56 @@
+//creating database 
+CREATE OR REPLACE DATABASE INSURANCE_DB
+
+//creating schema fro s3 stage//
+CREATE OR REPLACE SCHEMA  INSURANCE_DB.insurance_stages
+
+//creating schema for fileformats//
+CREATE OR REPLACE SCHEMA  INSURANCE_DB.insurance_file_formats
+
+//creating storage integration object to establish a secure connection between AWS S3 bucket and snowflake.
+create or replace storage integration s3_integration
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = S3
+  ENABLED = TRUE 
+  STORAGE_AWS_ROLE_ARN = ''
+  STORAGE_ALLOWED_LOCATIONS = ('s3://insurance-data-snowflake-etl-project')
+   COMMENT = 'integration object for secure access to AWS s3 bucket' ;
+
+//describing s3 integration object
+DESC integration s3_integration;
+ 
+// Create file format object
+CREATE OR REPLACE file format INSURANCE_DB.INSURANCE_FILE_FORMATS.csv_fileformat
+    type = csv
+    field_delimiter = ','
+    skip_header = 1
+    null_if = ('NULL','null')
+    empty_field_as_null = TRUE;
+    
+/// CREATING STAGE OBJECTS FOR EACH NORMALIZED DATA in S3 ///    
+ // Create stage object with integration object & file format object for policy data
+CREATE OR REPLACE stage INSURANCE_DB.INSURANCE_STAGES.policy_data_stage
+    URL ='s3://insurance-data-snowflake-etl-project/policy'
+    STORAGE_INTEGRATION = s3_integration
+    FILE_FORMAT = INSURANCE_DB.INSURANCE_FILE_FORMATS.csv_fileformat;
+
+// Create stage object with integration object & file format object for vehicles data
+CREATE OR REPLACE stage INSURANCE_DB.INSURANCE_STAGES.vehicles_data_stage
+    URL ='s3://insurance-data-snowflake-etl-project/vehicles'
+    STORAGE_INTEGRATION = s3_integration
+    FILE_FORMAT = INSURANCE_DB.INSURANCE_FILE_FORMATS.csv_fileformat;
+
+// Create stage object with integration object & file format object for customers data
+CREATE OR REPLACE stage INSURANCE_DB.INSURANCE_STAGES.customers_data_stage
+    URL ='s3://insurance-data-snowflake-etl-project/customers'
+    STORAGE_INTEGRATION = s3_integration
+    FILE_FORMAT = INSURANCE_DB.INSURANCE_FILE_FORMATS.csv_fileformat;
+
+ // Create stage object with integration object & file format object for claims data
+CREATE OR REPLACE stage INSURANCE_DB.INSURANCE_STAGES.claims_data_stage
+    URL ='s3://insurance-data-snowflake-etl-project/claims'
+    STORAGE_INTEGRATION = s3_integration
+    FILE_FORMAT = INSURANCE_DB.INSURANCE_FILE_FORMATS.csv_fileformat;
+
+
+

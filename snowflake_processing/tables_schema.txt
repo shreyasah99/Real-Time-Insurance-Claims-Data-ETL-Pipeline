@@ -1,0 +1,110 @@
+/// STAGING TABLES ///
+//creating staging tables for each normalized tables created by data pipeline
+CREATE OR REPLACE TABLE INSURANCE_DB.PUBLIC.staging_policy(
+     policy_id VARCHAR(15) PRIMARY KEY,
+    subscription_length FLOAT,
+    region_code VARCHAR(5),
+    segment VARCHAR(10));
+    
+CREATE OR REPLACE TABLE INSURANCE_DB.PUBLIC.staging_vehicles (
+    vehicle_id VARCHAR(15) PRIMARY KEY,
+    vehicle_age FLOAT,
+    fuel_type VARCHAR(10),
+    parking_sensors VARCHAR(5),
+    parking_camera VARCHAR(5),
+    rear_brakes_type VARCHAR(10),
+    displacement INT,
+    trasmission_type VARCHAR(20),
+    steering_type VARCHAR(15),
+    turning_radius FLOAT,
+    gross_weight INT,
+    front_fog_lights VARCHAR(5),
+    rear_window_wiper VARCHAR(5), 
+    rear_window_washer VARCHAR(5),
+    rear_window_defogger VARCHAR(5), 
+    brake_assist VARCHAR(5), 
+    central_locking VARCHAR(5),
+    power_steering VARCHAR(5),      
+    day_night_rear_view_mirror VARCHAR(5),  
+    is_speed_alert VARCHAR(5),
+    ncap_rating INT);
+
+    CREATE OR REPLACE TABLE INSURANCE_DB.PUBLIC.staging_customers(
+        customer_id VARCHAR(20) PRIMARY KEY,
+        customer_age INT,
+        region_density INT);
+
+    CREATE OR REPLACE TABLE INSURANCE_DB.PUBLIC.staging_claims(
+        claim_id VARCHAR(20) PRIMARY KEY,
+        claim_status INT);
+    
+    SELECT * FROM INSURANCE_DB.PUBLIC.policy
+    TRUNCATE TABLE INSURANCE_DB.PUBLIC.policy;
+
+
+/// FINAL TABLES ///
+//creating final table to store transformed data captured by stream objects 
+CREATE OR REPLACE TABLE INSURANCE_DB.PUBLIC.policy(
+     policy_id VARCHAR(15) PRIMARY KEY,
+    subscription_length FLOAT,
+    region_code VARCHAR(5),
+    segment VARCHAR(10));
+    
+CREATE OR REPLACE TABLE INSURANCE_DB.PUBLIC.vehicles (
+    vehicle_id VARCHAR(15) PRIMARY KEY,
+    vehicle_age FLOAT,
+    fuel_type VARCHAR(10),
+    parking_sensors VARCHAR(5),
+    parking_camera VARCHAR(5),
+    rear_brakes_type VARCHAR(10),
+    displacement INT,
+    trasmission_type VARCHAR(20),
+    steering_type VARCHAR(15),
+    turning_radius FLOAT,
+    gross_weight INT,
+    front_fog_lights VARCHAR(5),
+    rear_window_wiper VARCHAR(5), 
+    rear_window_washer VARCHAR(5),
+    rear_window_defogger VARCHAR(5), 
+    brake_assist VARCHAR(5), 
+    central_locking VARCHAR(5),
+    power_steering VARCHAR(5),      
+    day_night_rear_view_mirror VARCHAR(5),  
+    is_speed_alert VARCHAR(5),
+    ncap_rating INT);
+
+    CREATE OR REPLACE TABLE INSURANCE_DB.PUBLIC.customers(
+        customer_id VARCHAR(20) PRIMARY KEY,
+        customer_age INT,
+        region_density INT);
+
+    CREATE OR REPLACE TABLE INSURANCE_DB.PUBLIC.claims(
+        claim_id VARCHAR(20) PRIMARY KEY,
+        claim_status INT);
+
+///querying the results for staging table
+
+SELECT * FROM INSURANCE_DB.PUBLIC.staging_policy;
+
+SELECT * FROM INSURANCE_DB.PUBLIC.staging_vehicles;
+
+SELECT * FROM INSURANCE_DB.PUBLIC.staging_customers;
+
+SELECT * FROM INSURANCE_DB.PUBLIC.staging_claims;
+
+//querying results for final tables
+SELECT * FROM INSURANCE_DB.PUBLIC.polic;
+
+SELECT * FROM INSURANCE_DB.PUBLIC.vehicles;
+
+SELECT * FROM INSURANCE_DB.PUBLIC.customers;
+
+SELECT * FROM INSURANCE_DB.PUBLIC.claims;
+
+
+     
+
+
+    
+
+    

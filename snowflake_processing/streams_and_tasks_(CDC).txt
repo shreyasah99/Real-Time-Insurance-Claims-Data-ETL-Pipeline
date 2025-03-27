@@ -1,0 +1,93 @@
+
+/// CREATING STREAM OBJECTS FOR EACH STAGING TABLES TO CAPTURE NEW DATA ///
+//creating stream objects for staging tables
+CREATE OR REPLACE STREAM stream_policy ON TABLE staging_policy;
+CREATE OR REPLACE STREAM stream_vehicles ON TABLE staging_vehicles;
+CREATE OR REPLACE STREAM stream_customers ON TABLE staging_customers;
+CREATE OR REPLACE STREAM stream_claims ON TABLE staging_claims;
+
+// check total streams
+SHOW STREAMS
+
+/// CREATING TASKS TO AUTOMATE INSERTING NEW DATA FROM STREAM OBJECT TO FINAL TABLES WHEN AVAILABLE///
+//creating task to automate capturing stream object for policy data
+CREATE OR REPLACE TASK policy_cdc_task
+    WAREHOUSE = DEMO_WH
+    SCHEDULE = '2 SECOND'
+    WHEN SYSTEM$STREAM_HAS_DATA('stream_policy')
+    AS 
+    MERGE INTO policy AS a
+    USING stream_policy AS b
+    ON a.policy_id = b.policy_id
+    WHEN NOT MATCHED AND b.METADATA$ACTION = 'INSERT' THEN
+        INSERT (a.policy_id, a.subscription_length, a.region_code, a.segment)
+        VALUES (b.policy_id, b.subscription_length, b.region_code, b.segment);
+
+///creating task to automate capturing stream object for vehicles data
+CREATE OR REPLACE TASK vehicles_cdc_task
+    WAREHOUSE = DEMO_WH
+    SCHEDULE = '1 MINUTE'
+    WHEN SYSTEM$STREAM_HAS_DATA('stream_vehicles')
+    AS 
+    MERGE INTO vehicles AS a
+    USING stream_vehicles AS b
+    ON a.vehicle_id = b.vehicle_id
+    WHEN NOT MATCHED AND b.METADATA$ACTION = 'INSERT' THEN
+        INSERT (a.vehicle_id, a.vehicle_age,a.fuel_type, a.parking_sensors, a.parking_camera, a.rear_brakes_type, a.displacement, a.trasmission_type, a.steering_type,      a.turning_radius, a.gross_weight, a.front_fog_lights, a.rear_window_wiper, a.rear_window_washer, a.rear_window_defogger, a.brake_assist, a.central_locking, a.power_steering, a.day_night_rear_view_mirror, a.is_speed_alert, a.ncap_rating)
+        VALUES (b.vehicle_id, b.vehicle_age,b.fuel_type, b.parking_sensors, b.parking_camera, b.rear_brakes_type, b.displacement, b.trasmission_type, b.steering_type, b.turning_radius, b.gross_weight, b.front_fog_lights, b.rear_window_wiper, b.rear_window_washer, b.rear_window_defogger, b.brake_assist, b.central_locking, b.power_steering, b.day_night_rear_view_mirror, b.is_speed_alert, b.ncap_rating);
+
+    
+//creating task to automate capturing stream object for customers data
+CREATE OR REPLACE TASK customers_cdc_task
+    WAREHOUSE = DEMO_WH
+    SCHEDULE = '1 MINUTE'
+    WHEN SYSTEM$STREAM_HAS_DATA('stream_customers')
+    AS 
+    MERGE INTO customers AS a
+    USING stream_customers AS b
+    ON a.customer_id = b.customer_id
+    WHEN NOT MATCHED AND b.METADATA$ACTION = 'INSERT' THEN
+        INSERT (a.customer_id, a.customer_age, a.region_density)
+        VALUES (b.customer_id, b.customer_age, b.region_density);
+
+    
+//creating task to automate capturing stream object for claims data
+CREATE OR REPLACE TASK claims_cdc_task
+    WAREHOUSE = DEMO_WH
+    SCHEDULE = '1 MINUTE'
+    WHEN SYSTEM$STREAM_HAS_DATA('stream_claims')
+    AS 
+    MERGE INTO claims AS a
+    USING stream_claims AS b
+    ON a.claim_id = b.claim_id
+    WHEN NOT MATCHED AND b.METADATA$ACTION = 'INSERT' THEN
+        INSERT (a.claim_id, a.claim_status)
+        VALUES (b.claim_id, b.claim_status);
+
+    
+//check tasks details and resume tasks
+ALTER TASK policy_cdc_task RESUME;
+ALTER TASK vehicles_cdc_task RESUME;
+ALTER TASK customers_cdc_task RESUME;
+ALTER TASK claims_cdc_task RESUME;
+
+//check total tasks
+SHOW TASKS;
+
+//check total streams
+SHOW STREAMS;
+
+//describe stream objects
+DESC STREAM stream_policy
+DESC STREAM stream_vehicles
+DESC STREAM stream_customers
+DESC STREAM stream_claims
+
+//check task history
+SELECT *
+FROM INFORMATION_SCHEMA.TASK_HISTORY
+WHERE DATABASE_NAME = 'INSURANCE_DB' AND SCHEMA_NAME = 'TASKS' AND NAME = 'policy_cdc_task'
+ORDER BY SCHEDULED_TIME DESC;
+
+
+
